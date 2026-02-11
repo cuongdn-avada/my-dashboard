@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { fetchAllSheets, saveOrders } from "@/lib/data";
-import type { SyncResult } from "@/lib/types";
+import { revalidatePath } from "next/cache";
 
 export const dynamic = "force-dynamic";
 
@@ -8,6 +7,7 @@ export async function GET(request: NextRequest) {
   const authHeader = request.headers.get("authorization");
   const cronSecret = process.env.CRON_SECRET;
 
+  // Allow if no secret is set, or if secret matches
   if (cronSecret && authHeader !== `Bearer ${cronSecret}`) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
@@ -21,25 +21,16 @@ export async function POST() {
 
 async function syncData() {
   try {
-    const { orders, sheets } = await fetchAllSheets();
-    await saveOrders(orders, sheets);
+    // Revalidate the homepage - Next.js will re-fetch data from Google Sheets
+    revalidatePath("/");
 
-    const result: SyncResult = {
+    return NextResponse.json({
       success: true,
-      orderCount: orders.length,
       lastSync: new Date().toISOString(),
-    };
-
-    return NextResponse.json({ ...result, sheets });
+      message: "Cache invalidated. Page will fetch fresh data on next visit.",
+    });
   } catch (error) {
     const message = error instanceof Error ? error.message : "Unknown error";
-    const result: SyncResult = {
-      success: false,
-      orderCount: 0,
-      lastSync: new Date().toISOString(),
-      error: message,
-    };
-
-    return NextResponse.json(result, { status: 500 });
+    return NextResponse.json({ success: false, error: message }, { status: 500 });
   }
 }
