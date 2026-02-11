@@ -9,6 +9,7 @@ export interface Order {
   remaining: number;
   status: string;
   notes: string;
+  sheetName: string;
 }
 
 export interface DashboardStats {

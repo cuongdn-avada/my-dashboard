@@ -38,7 +38,7 @@ export function SyncButton({ lastSync, onSyncComplete }: SyncButtonProps) {
   }
 
   function formatLastSync(dateStr: string | null) {
-    if (!dateStr) return "Chưa đồng bộ";
+    if (!dateStr) return "Chua dong bo";
     try {
       const date = new Date(dateStr);
       return date.toLocaleString("vi-VN", {
@@ -53,25 +53,28 @@ export function SyncButton({ lastSync, onSyncComplete }: SyncButtonProps) {
   }
 
   return (
-    <div className="flex items-center gap-3">
-      <span className="text-xs text-muted-foreground hidden sm:inline">
-        Cập nhật: {formatLastSync(lastSync)}
-      </span>
+    <div className="flex items-center gap-2.5">
+      <div className="hidden sm:flex items-center gap-1.5">
+        <div className={`h-1.5 w-1.5 rounded-full ${status === "success" ? "bg-emerald-500" : status === "error" ? "bg-red-500" : "bg-muted-foreground/40"}`} />
+        <span className="text-[11px] text-muted-foreground">
+          {formatLastSync(lastSync)}
+        </span>
+      </div>
       <Button
         variant="outline"
         size="sm"
         onClick={handleSync}
         disabled={syncing}
-        className="gap-2"
+        className="gap-2 h-8 text-xs cursor-pointer transition-all duration-200 hover:shadow-sm"
       >
         {status === "success" ? (
-          <CheckCircle2 className="h-4 w-4 text-emerald-500" />
+          <CheckCircle2 className="h-3.5 w-3.5 text-emerald-500" />
         ) : status === "error" ? (
-          <AlertCircle className="h-4 w-4 text-destructive" />
+          <AlertCircle className="h-3.5 w-3.5 text-destructive" />
         ) : (
-          <RefreshCw className={`h-4 w-4 ${syncing ? "animate-spin" : ""}`} />
+          <RefreshCw className={`h-3.5 w-3.5 ${syncing ? "animate-spin" : ""}`} />
         )}
-        {syncing ? "Đang đồng bộ..." : status === "success" ? "Thành công!" : status === "error" ? "Lỗi!" : "Sync Now"}
+        {syncing ? "Syncing..." : status === "success" ? "Done!" : status === "error" ? "Error" : "Sync"}
       </Button>
     </div>
   );

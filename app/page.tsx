@@ -1,24 +1,16 @@
-import { loadOrders, getLastSync, computeStats, computeTopCustomers, computeDailyRevenue, computeMonthlyRevenue } from "@/lib/data";
+import { loadOrders, getMeta } from "@/lib/data";
 import { DashboardClient } from "@/components/dashboard/dashboard-client";
 
 export const dynamic = "force-dynamic";
 
 export default async function DashboardPage() {
   const orders = await loadOrders();
-  const meta = await getLastSync();
-
-  const stats = computeStats(orders);
-  const topCustomers = computeTopCustomers(orders, 8);
-  const dailyRevenue = computeDailyRevenue(orders);
-  const monthlyRevenue = computeMonthlyRevenue(orders);
+  const meta = await getMeta();
 
   return (
     <DashboardClient
       orders={orders}
-      stats={stats}
-      topCustomers={topCustomers}
-      dailyRevenue={dailyRevenue}
-      monthlyRevenue={monthlyRevenue}
+      sheets={meta?.sheets ?? []}
       lastSync={meta?.lastSync ?? null}
     />
   );

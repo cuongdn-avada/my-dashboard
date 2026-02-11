@@ -1,10 +1,10 @@
 "use client";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { DashboardStats } from "@/lib/types";
 import { formatCurrency } from "@/lib/format";
 import {
-  DollarSign,
+  TrendingUp,
   Wallet,
   Clock,
   ShoppingCart,
@@ -16,66 +16,92 @@ interface StatsCardsProps {
   stats: DashboardStats;
 }
 
-export function StatsCards({ stats }: StatsCardsProps) {
-  const cards = [
-    {
-      title: "Tổng doanh thu",
-      value: formatCurrency(stats.totalRevenue),
-      icon: DollarSign,
-      color: "text-emerald-600 dark:text-emerald-400",
-      bg: "bg-emerald-50 dark:bg-emerald-950/50",
-    },
-    {
-      title: "Đã cọc",
-      value: formatCurrency(stats.totalDeposit),
-      icon: Wallet,
-      color: "text-blue-600 dark:text-blue-400",
-      bg: "bg-blue-50 dark:bg-blue-950/50",
-    },
-    {
-      title: "Còn thu",
-      value: formatCurrency(stats.totalRemaining),
-      icon: Clock,
-      color: "text-amber-600 dark:text-amber-400",
-      bg: "bg-amber-50 dark:bg-amber-950/50",
-    },
-    {
-      title: "Tổng đơn",
-      value: stats.totalOrders.toString(),
-      icon: ShoppingCart,
-      color: "text-violet-600 dark:text-violet-400",
-      bg: "bg-violet-50 dark:bg-violet-950/50",
-    },
-    {
-      title: "Phí ship",
-      value: formatCurrency(stats.totalShipping),
-      icon: Truck,
-      color: "text-rose-600 dark:text-rose-400",
-      bg: "bg-rose-50 dark:bg-rose-950/50",
-    },
-    {
-      title: "Hoàn thành",
-      value: `${stats.completedOrders}/${stats.totalOrders}`,
-      icon: CheckCircle2,
-      color: "text-teal-600 dark:text-teal-400",
-      bg: "bg-teal-50 dark:bg-teal-950/50",
-    },
-  ];
+const cardConfigs = [
+  {
+    key: "revenue",
+    title: "Tổng doanh thu",
+    icon: TrendingUp,
+    gradient: "from-blue-600 to-indigo-600",
+    iconBg: "bg-blue-500/10 dark:bg-blue-400/10",
+    iconColor: "text-blue-600 dark:text-blue-400",
+  },
+  {
+    key: "deposit",
+    title: "Đã cọc",
+    icon: Wallet,
+    gradient: "from-emerald-600 to-teal-600",
+    iconBg: "bg-emerald-500/10 dark:bg-emerald-400/10",
+    iconColor: "text-emerald-600 dark:text-emerald-400",
+  },
+  {
+    key: "remaining",
+    title: "Còn thu",
+    icon: Clock,
+    gradient: "from-amber-500 to-orange-500",
+    iconBg: "bg-amber-500/10 dark:bg-amber-400/10",
+    iconColor: "text-amber-600 dark:text-amber-400",
+  },
+  {
+    key: "orders",
+    title: "Tổng đơn",
+    icon: ShoppingCart,
+    gradient: "from-violet-600 to-purple-600",
+    iconBg: "bg-violet-500/10 dark:bg-violet-400/10",
+    iconColor: "text-violet-600 dark:text-violet-400",
+  },
+  {
+    key: "shipping",
+    title: "Phí ship",
+    icon: Truck,
+    gradient: "from-rose-500 to-pink-500",
+    iconBg: "bg-rose-500/10 dark:bg-rose-400/10",
+    iconColor: "text-rose-600 dark:text-rose-400",
+  },
+  {
+    key: "completed",
+    title: "Hoàn thành",
+    icon: CheckCircle2,
+    gradient: "from-teal-500 to-cyan-500",
+    iconBg: "bg-teal-500/10 dark:bg-teal-400/10",
+    iconColor: "text-teal-600 dark:text-teal-400",
+  },
+];
 
+function getValue(key: string, stats: DashboardStats): string {
+  switch (key) {
+    case "revenue": return formatCurrency(stats.totalRevenue);
+    case "deposit": return formatCurrency(stats.totalDeposit);
+    case "remaining": return formatCurrency(stats.totalRemaining);
+    case "orders": return stats.totalOrders.toLocaleString("vi-VN");
+    case "shipping": return formatCurrency(stats.totalShipping);
+    case "completed": return `${stats.completedOrders}/${stats.totalOrders}`;
+    default: return "0";
+  }
+}
+
+export function StatsCards({ stats }: StatsCardsProps) {
   return (
-    <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-6">
-      {cards.map((card) => (
-        <Card key={card.title} className="relative overflow-hidden">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">
-              {card.title}
-            </CardTitle>
-            <div className={`rounded-lg p-2 ${card.bg}`}>
-              <card.icon className={`h-4 w-4 ${card.color}`} />
+    <div className="grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-3 lg:grid-cols-6">
+      {cardConfigs.map((card) => (
+        <Card
+          key={card.key}
+          className="group relative overflow-hidden transition-all duration-200 hover:shadow-lg hover:shadow-black/5 dark:hover:shadow-black/20 hover:-translate-y-0.5"
+        >
+          <div className={`absolute inset-x-0 top-0 h-0.5 bg-gradient-to-r ${card.gradient} opacity-80`} />
+          <CardContent className="p-4 sm:p-5">
+            <div className="flex items-start justify-between">
+              <div className="space-y-2">
+                <p className="text-xs font-medium tracking-wide text-muted-foreground uppercase">
+                  {card.title}
+                </p>
+                <p className="text-xl font-bold tracking-tight sm:text-2xl">
+                  {getValue(card.key, stats)}
+                </p>
+              </div>
+              <div className={`rounded-xl p-2.5 ${card.iconBg} transition-transform duration-200 group-hover:scale-110`}>
+                <card.icon className={`h-4 w-4 ${card.iconColor}`} />
+              </div>
             </div>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{card.value}</div>
           </CardContent>
         </Card>
       ))}

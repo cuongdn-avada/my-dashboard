@@ -16,25 +16,34 @@ import {
   Area,
   AreaChart,
 } from "recharts";
+import { BarChart3 } from "lucide-react";
 
 interface RevenueChartProps {
   dailyRevenue: DailyRevenue[];
   monthlyRevenue: DailyRevenue[];
 }
 
-function CustomTooltip({ active, payload, label }: { active?: boolean; payload?: Array<{ value: number }>; label?: string }) {
+function CustomTooltip({ active, payload, label }: { active?: boolean; payload?: Array<{ value: number; dataKey: string }>; label?: string }) {
   if (!active || !payload || !payload.length) return null;
   return (
-    <div className="rounded-lg border bg-background p-3 shadow-md">
-      <p className="text-sm font-medium">{label}</p>
-      <p className="text-sm text-emerald-600 dark:text-emerald-400">
-        Doanh thu: {new Intl.NumberFormat("vi-VN").format(payload[0].value)}k
-      </p>
-      {payload[1] && (
-        <p className="text-sm text-muted-foreground">
-          Đơn hàng: {payload[1].value}
-        </p>
-      )}
+    <div className="rounded-xl border bg-card/95 backdrop-blur-sm p-3 shadow-xl shadow-black/10">
+      <p className="text-xs font-semibold text-foreground mb-1.5">{label}</p>
+      <div className="space-y-1">
+        <div className="flex items-center gap-2">
+          <div className="h-2 w-2 rounded-full bg-blue-500" />
+          <p className="text-xs text-muted-foreground">
+            Doanh thu: <span className="font-semibold text-foreground">{new Intl.NumberFormat("vi-VN").format(payload[0].value)}k</span>
+          </p>
+        </div>
+        {payload[1] && (
+          <div className="flex items-center gap-2">
+            <div className="h-2 w-2 rounded-full bg-violet-500" />
+            <p className="text-xs text-muted-foreground">
+              Don hang: <span className="font-semibold text-foreground">{payload[1].value}</span>
+            </p>
+          </div>
+        )}
+      </div>
     </div>
   );
 }
@@ -49,56 +58,89 @@ export function RevenueChart({ dailyRevenue, monthlyRevenue }: RevenueChartProps
   }));
 
   return (
-    <Card className="col-span-full lg:col-span-2">
-      <CardHeader className="flex flex-row items-center justify-between">
-        <CardTitle>Doanh thu theo thời gian</CardTitle>
+    <Card className="col-span-full lg:col-span-2 overflow-hidden">
+      <CardHeader className="flex flex-row items-center justify-between pb-2">
+        <div className="flex items-center gap-2.5">
+          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10">
+            <BarChart3 className="h-4 w-4 text-primary" />
+          </div>
+          <div>
+            <CardTitle className="text-base">Doanh thu theo thoi gian</CardTitle>
+            <p className="text-xs text-muted-foreground mt-0.5">
+              {chartData.length} {view === "daily" ? "ngay" : "thang"}
+            </p>
+          </div>
+        </div>
         <Tabs value={view} onValueChange={(v) => setView(v as "daily" | "monthly")}>
-          <TabsList>
-            <TabsTrigger value="daily">Ngày</TabsTrigger>
-            <TabsTrigger value="monthly">Tháng</TabsTrigger>
+          <TabsList className="h-8">
+            <TabsTrigger value="daily" className="text-xs px-3 cursor-pointer">Ngay</TabsTrigger>
+            <TabsTrigger value="monthly" className="text-xs px-3 cursor-pointer">Thang</TabsTrigger>
           </TabsList>
         </Tabs>
       </CardHeader>
-      <CardContent>
-        <div className="h-[350px] w-full">
+      <CardContent className="pt-2">
+        <div className="h-[320px] w-full">
           <ResponsiveContainer width="100%" height="100%">
             {view === "daily" ? (
-              <AreaChart data={chartData}>
+              <AreaChart data={chartData} margin={{ top: 5, right: 5, left: -20, bottom: 0 }}>
                 <defs>
                   <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="hsl(var(--chart-1))" stopOpacity={0.3} />
-                    <stop offset="95%" stopColor="hsl(var(--chart-1))" stopOpacity={0} />
+                    <stop offset="0%" stopColor="oklch(0.55 0.2 260)" stopOpacity={0.25} />
+                    <stop offset="100%" stopColor="oklch(0.55 0.2 260)" stopOpacity={0.02} />
                   </linearGradient>
                 </defs>
-                <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
+                <CartesianGrid strokeDasharray="3 3" stroke="oklch(0.5 0 0 / 0.08)" vertical={false} />
                 <XAxis
                   dataKey="displayDate"
-                  className="text-xs"
-                  tick={{ fontSize: 11 }}
+                  tick={{ fontSize: 10, fill: "oklch(0.5 0.02 260)" }}
+                  axisLine={false}
+                  tickLine={false}
                   angle={-45}
                   textAnchor="end"
-                  height={60}
+                  height={55}
                 />
-                <YAxis className="text-xs" tick={{ fontSize: 11 }} />
+                <YAxis
+                  tick={{ fontSize: 10, fill: "oklch(0.5 0.02 260)" }}
+                  axisLine={false}
+                  tickLine={false}
+                />
                 <Tooltip content={<CustomTooltip />} />
                 <Area
                   type="monotone"
                   dataKey="revenue"
-                  stroke="hsl(var(--chart-1))"
+                  stroke="oklch(0.55 0.2 260)"
                   fill="url(#colorRevenue)"
                   strokeWidth={2}
+                  dot={false}
+                  activeDot={{ r: 5, strokeWidth: 2, fill: "oklch(0.55 0.2 260)" }}
                 />
               </AreaChart>
             ) : (
-              <BarChart data={chartData}>
-                <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
-                <XAxis dataKey="displayDate" className="text-xs" tick={{ fontSize: 12 }} />
-                <YAxis className="text-xs" tick={{ fontSize: 11 }} />
+              <BarChart data={chartData} margin={{ top: 5, right: 5, left: -20, bottom: 0 }}>
+                <defs>
+                  <linearGradient id="barGradient" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="oklch(0.55 0.2 260)" stopOpacity={0.9} />
+                    <stop offset="100%" stopColor="oklch(0.55 0.2 260)" stopOpacity={0.5} />
+                  </linearGradient>
+                </defs>
+                <CartesianGrid strokeDasharray="3 3" stroke="oklch(0.5 0 0 / 0.08)" vertical={false} />
+                <XAxis
+                  dataKey="displayDate"
+                  tick={{ fontSize: 11, fill: "oklch(0.5 0.02 260)" }}
+                  axisLine={false}
+                  tickLine={false}
+                />
+                <YAxis
+                  tick={{ fontSize: 10, fill: "oklch(0.5 0.02 260)" }}
+                  axisLine={false}
+                  tickLine={false}
+                />
                 <Tooltip content={<CustomTooltip />} />
                 <Bar
                   dataKey="revenue"
-                  fill="hsl(var(--chart-1))"
-                  radius={[4, 4, 0, 0]}
+                  fill="url(#barGradient)"
+                  radius={[6, 6, 0, 0]}
+                  maxBarSize={48}
                 />
               </BarChart>
             )}

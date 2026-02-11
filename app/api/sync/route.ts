@@ -1,11 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
-import { fetchFromGoogleSheet, saveOrders } from "@/lib/data";
+import { fetchAllSheets, saveOrders } from "@/lib/data";
 import type { SyncResult } from "@/lib/types";
 
 export const dynamic = "force-dynamic";
 
 export async function GET(request: NextRequest) {
-  // Verify cron secret for automated calls
   const authHeader = request.headers.get("authorization");
   const cronSecret = process.env.CRON_SECRET;
 
@@ -22,8 +21,8 @@ export async function POST() {
 
 async function syncData() {
   try {
-    const orders = await fetchFromGoogleSheet();
-    await saveOrders(orders);
+    const { orders, sheets } = await fetchAllSheets();
+    await saveOrders(orders, sheets);
 
     const result: SyncResult = {
       success: true,
@@ -31,7 +30,7 @@ async function syncData() {
       lastSync: new Date().toISOString(),
     };
 
-    return NextResponse.json(result);
+    return NextResponse.json({ ...result, sheets });
   } catch (error) {
     const message = error instanceof Error ? error.message : "Unknown error";
     const result: SyncResult = {
