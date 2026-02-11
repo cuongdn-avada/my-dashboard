@@ -1,17 +1,17 @@
-import { loadOrders, getMeta } from "@/lib/data";
+import { fetchAllSheets } from "@/lib/data";
 import { DashboardClient } from "@/components/dashboard/dashboard-client";
 
-export const dynamic = "force-dynamic";
+// Revalidate every hour (3600 seconds) - Next.js ISR
+export const revalidate = 3600;
 
 export default async function DashboardPage() {
-  const orders = await loadOrders();
-  const meta = await getMeta();
+  const { orders, sheets } = await fetchAllSheets();
 
   return (
     <DashboardClient
       orders={orders}
-      sheets={meta?.sheets ?? []}
-      lastSync={meta?.lastSync ?? null}
+      sheets={sheets}
+      lastSync={new Date().toISOString()}
     />
   );
 }
