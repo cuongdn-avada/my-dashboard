@@ -15,7 +15,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Order } from "@/lib/types";
 import { formatCurrency, formatDate } from "@/lib/format";
-import { Search, ChevronLeft, ChevronRight, ArrowUpDown } from "lucide-react";
+import { Search, ChevronLeft, ChevronRight, ArrowUpDown, TableIcon } from "lucide-react";
 
 interface OrderTableProps {
   orders: Order[];
@@ -48,21 +48,11 @@ export function OrderTable({ orders }: OrderTableProps) {
     return [...filtered].sort((a, b) => {
       let cmp = 0;
       switch (sortField) {
-        case "date":
-          cmp = a.date.localeCompare(b.date);
-          break;
-        case "customerName":
-          cmp = a.customerName.localeCompare(b.customerName);
-          break;
-        case "total":
-          cmp = a.total - b.total;
-          break;
-        case "remaining":
-          cmp = a.remaining - b.remaining;
-          break;
-        case "status":
-          cmp = a.status.localeCompare(b.status);
-          break;
+        case "date": cmp = a.date.localeCompare(b.date); break;
+        case "customerName": cmp = a.customerName.localeCompare(b.customerName); break;
+        case "total": cmp = a.total - b.total; break;
+        case "remaining": cmp = a.remaining - b.remaining; break;
+        case "status": cmp = a.status.localeCompare(b.status); break;
       }
       return sortDir === "asc" ? cmp : -cmp;
     });
@@ -82,105 +72,117 @@ export function OrderTable({ orders }: OrderTableProps) {
   }
 
   function SortButton({ field, children }: { field: SortField; children: React.ReactNode }) {
+    const isActive = sortField === field;
     return (
       <button
         onClick={() => handleSort(field)}
-        className="flex items-center gap-1 hover:text-foreground transition-colors"
+        className={`flex items-center gap-1.5 cursor-pointer transition-colors duration-150 ${
+          isActive ? "text-foreground" : "text-muted-foreground hover:text-foreground"
+        }`}
       >
         {children}
-        <ArrowUpDown className="h-3 w-3" />
+        <ArrowUpDown className={`h-3 w-3 ${isActive ? "opacity-100" : "opacity-40"}`} />
       </button>
     );
   }
 
   return (
-    <Card>
-      <CardHeader className="flex flex-row items-center justify-between">
-        <CardTitle>Chi tiết đơn hàng</CardTitle>
-        <div className="relative w-72">
+    <Card className="overflow-hidden">
+      <CardHeader className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 pb-4">
+        <div className="flex items-center gap-2.5">
+          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10">
+            <TableIcon className="h-4 w-4 text-primary" />
+          </div>
+          <div>
+            <CardTitle className="text-base">Chi tiet don hang</CardTitle>
+            <p className="text-xs text-muted-foreground mt-0.5">
+              {filtered.length} don hang
+            </p>
+          </div>
+        </div>
+        <div className="relative w-full sm:w-72">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
           <Input
-            placeholder="Tìm tên, SĐT, địa chỉ..."
+            placeholder="Tim ten, SDT, dia chi..."
             value={search}
             onChange={(e) => {
               setSearch(e.target.value);
               setPage(0);
             }}
-            className="pl-9"
+            className="pl-9 h-9 text-sm"
           />
         </div>
       </CardHeader>
-      <CardContent>
-        <div className="rounded-md border">
+      <CardContent className="px-0 pt-0">
+        <div className="overflow-x-auto">
           <Table>
             <TableHeader>
-              <TableRow>
-                <TableHead className="w-[100px]">
-                  <SortButton field="date">Ngày</SortButton>
+              <TableRow className="hover:bg-transparent">
+                <TableHead className="w-[90px] pl-6">
+                  <SortButton field="date">Ngay</SortButton>
                 </TableHead>
                 <TableHead>
-                  <SortButton field="customerName">Khách hàng</SortButton>
+                  <SortButton field="customerName">Khach hang</SortButton>
                 </TableHead>
-                <TableHead className="hidden md:table-cell">Thông tin</TableHead>
+                <TableHead className="hidden md:table-cell">Thong tin</TableHead>
                 <TableHead className="text-right">
-                  <SortButton field="total">Tổng tiền</SortButton>
+                  <SortButton field="total">Tong tien</SortButton>
                 </TableHead>
-                <TableHead className="text-right hidden sm:table-cell">Cọc</TableHead>
+                <TableHead className="text-right hidden sm:table-cell">Coc</TableHead>
                 <TableHead className="text-right hidden sm:table-cell">Ship</TableHead>
                 <TableHead className="text-right">
-                  <SortButton field="remaining">Còn thu</SortButton>
+                  <SortButton field="remaining">Con thu</SortButton>
                 </TableHead>
-                <TableHead>
-                  <SortButton field="status">Trạng thái</SortButton>
+                <TableHead className="pr-6">
+                  <SortButton field="status">Trang thai</SortButton>
                 </TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {paginated.map((order) => (
-                <TableRow key={order.id}>
-                  <TableCell className="font-mono text-sm">
+                <TableRow key={order.id} className="group transition-colors duration-150">
+                  <TableCell className="font-mono text-xs pl-6 text-muted-foreground">
                     {formatDate(order.date)}
                   </TableCell>
-                  <TableCell className="font-medium">
+                  <TableCell className="font-medium text-sm">
                     {order.customerName}
                   </TableCell>
-                  <TableCell className="hidden md:table-cell text-sm text-muted-foreground max-w-[200px] truncate">
+                  <TableCell className="hidden md:table-cell text-xs text-muted-foreground max-w-[220px] truncate">
                     {order.addressPhoneNotes}
                   </TableCell>
-                  <TableCell className="text-right font-mono">
+                  <TableCell className="text-right font-mono text-sm font-medium">
                     {formatCurrency(order.total)}
                   </TableCell>
-                  <TableCell className="text-right font-mono hidden sm:table-cell">
+                  <TableCell className="text-right font-mono text-sm text-muted-foreground hidden sm:table-cell">
                     {formatCurrency(order.deposit)}
                   </TableCell>
-                  <TableCell className="text-right font-mono hidden sm:table-cell">
+                  <TableCell className="text-right font-mono text-sm text-muted-foreground hidden sm:table-cell">
                     {formatCurrency(order.shipping)}
                   </TableCell>
-                  <TableCell className="text-right font-mono">
-                    {formatCurrency(order.remaining)}
+                  <TableCell className="text-right font-mono text-sm">
+                    <span className={order.remaining > 0 ? "text-amber-600 dark:text-amber-400 font-medium" : "text-muted-foreground"}>
+                      {formatCurrency(order.remaining)}
+                    </span>
                   </TableCell>
-                  <TableCell>
-                    <Badge
-                      variant={
-                        order.status === "xong" || order.status === "done"
-                          ? "default"
-                          : "secondary"
-                      }
-                      className={
-                        order.status === "xong" || order.status === "done"
-                          ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300"
-                          : ""
-                      }
-                    >
-                      {order.status || "---"}
-                    </Badge>
+                  <TableCell className="pr-6">
+                    {order.status === "xong" || order.status === "done" || order.status === "đã lên đơn" ? (
+                      <Badge className="bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border-emerald-500/20 hover:bg-emerald-500/10 text-[11px] font-medium">
+                        {order.status}
+                      </Badge>
+                    ) : order.status ? (
+                      <Badge variant="secondary" className="text-[11px] font-medium">
+                        {order.status}
+                      </Badge>
+                    ) : (
+                      <span className="text-xs text-muted-foreground/50">---</span>
+                    )}
                   </TableCell>
                 </TableRow>
               ))}
               {paginated.length === 0 && (
                 <TableRow>
-                  <TableCell colSpan={8} className="text-center py-8 text-muted-foreground">
-                    {search ? "Không tìm thấy đơn hàng phù hợp" : "Chưa có dữ liệu"}
+                  <TableCell colSpan={8} className="text-center py-12 text-muted-foreground">
+                    {search ? "Khong tim thay don hang phu hop" : "Chua co du lieu"}
                   </TableCell>
                 </TableRow>
               )}
@@ -188,27 +190,29 @@ export function OrderTable({ orders }: OrderTableProps) {
           </Table>
         </div>
         {totalPages > 1 && (
-          <div className="flex items-center justify-between mt-4">
-            <p className="text-sm text-muted-foreground">
-              Hiển thị {page * PAGE_SIZE + 1}-{Math.min((page + 1) * PAGE_SIZE, sorted.length)} / {sorted.length} đơn
+          <div className="flex items-center justify-between px-6 pt-4 pb-2 border-t">
+            <p className="text-xs text-muted-foreground">
+              {page * PAGE_SIZE + 1}&ndash;{Math.min((page + 1) * PAGE_SIZE, sorted.length)} / {sorted.length}
             </p>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1.5">
               <Button
-                variant="outline"
+                variant="ghost"
                 size="icon"
                 onClick={() => setPage(page - 1)}
                 disabled={page === 0}
+                className="h-8 w-8 cursor-pointer"
               >
                 <ChevronLeft className="h-4 w-4" />
               </Button>
-              <span className="text-sm font-medium">
+              <span className="text-xs font-medium text-muted-foreground tabular-nums min-w-[3rem] text-center">
                 {page + 1} / {totalPages}
               </span>
               <Button
-                variant="outline"
+                variant="ghost"
                 size="icon"
                 onClick={() => setPage(page + 1)}
                 disabled={page >= totalPages - 1}
+                className="h-8 w-8 cursor-pointer"
               >
                 <ChevronRight className="h-4 w-4" />
               </Button>

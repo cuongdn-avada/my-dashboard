@@ -1,63 +1,82 @@
 "use client";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { CustomerStat } from "@/lib/types";
 import { formatCurrency } from "@/lib/format";
-import { Crown, Medal, Award } from "lucide-react";
+import { Crown, Medal, Award, Users } from "lucide-react";
 
 interface TopCustomersProps {
   customers: CustomerStat[];
 }
 
-const rankIcons = [Crown, Medal, Award];
-const rankColors = [
-  "text-yellow-500",
-  "text-gray-400",
-  "text-amber-700",
+const rankConfig = [
+  { icon: Crown, color: "text-amber-500", bg: "bg-amber-500/10", ring: "ring-amber-500/20" },
+  { icon: Medal, color: "text-slate-400", bg: "bg-slate-400/10", ring: "ring-slate-400/20" },
+  { icon: Award, color: "text-orange-600", bg: "bg-orange-600/10", ring: "ring-orange-600/20" },
 ];
 
 export function TopCustomers({ customers }: TopCustomersProps) {
   return (
-    <Card className="col-span-full lg:col-span-1">
-      <CardHeader>
-        <CardTitle>Top khách hàng</CardTitle>
+    <Card className="col-span-full lg:col-span-1 overflow-hidden">
+      <CardHeader className="pb-3">
+        <div className="flex items-center gap-2.5">
+          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10">
+            <Users className="h-4 w-4 text-primary" />
+          </div>
+          <div>
+            <CardTitle className="text-base">Top khach hang</CardTitle>
+            <p className="text-xs text-muted-foreground mt-0.5">
+              Theo tong chi tieu
+            </p>
+          </div>
+        </div>
       </CardHeader>
-      <CardContent>
-        <div className="space-y-3">
+      <CardContent className="pt-0">
+        <div className="space-y-2">
           {customers.map((customer, index) => {
-            const RankIcon = rankIcons[index];
+            const config = rankConfig[index];
+            const isTop3 = index < 3;
             return (
               <div
                 key={customer.name}
-                className="flex items-center justify-between rounded-lg border p-3 transition-colors hover:bg-muted/50"
+                className={`group flex items-center justify-between rounded-xl px-3 py-2.5 transition-all duration-200 cursor-default ${
+                  isTop3
+                    ? "bg-muted/50 hover:bg-muted"
+                    : "hover:bg-muted/50"
+                }`}
               >
-                <div className="flex items-center gap-3">
-                  <div className="flex h-8 w-8 items-center justify-center rounded-full bg-muted text-sm font-bold">
-                    {RankIcon ? (
-                      <RankIcon className={`h-4 w-4 ${rankColors[index]}`} />
+                <div className="flex items-center gap-3 min-w-0">
+                  <div
+                    className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-lg text-xs font-bold ${
+                      config
+                        ? `${config.bg} ${config.color} ring-1 ${config.ring}`
+                        : "bg-muted text-muted-foreground"
+                    }`}
+                  >
+                    {config ? (
+                      <config.icon className="h-3.5 w-3.5" />
                     ) : (
-                      <span className="text-muted-foreground">{index + 1}</span>
+                      <span>{index + 1}</span>
                     )}
                   </div>
-                  <div>
-                    <p className="text-sm font-medium leading-none">
+                  <div className="min-w-0">
+                    <p className="text-sm font-medium leading-none truncate">
                       {customer.name}
                     </p>
-                    <p className="text-xs text-muted-foreground mt-1">
-                      {customer.orderCount} đơn
+                    <p className="text-[11px] text-muted-foreground mt-1">
+                      {customer.orderCount} don hang
                     </p>
                   </div>
                 </div>
-                <Badge variant="secondary" className="font-mono">
+                <span className="text-sm font-semibold tabular-nums text-foreground shrink-0 ml-2">
                   {formatCurrency(customer.totalSpent)}
-                </Badge>
+                </span>
               </div>
             );
           })}
           {customers.length === 0 && (
-            <p className="text-sm text-muted-foreground text-center py-4">
-              Chưa có dữ liệu
+            <p className="text-sm text-muted-foreground text-center py-8">
+              Chua co du lieu
             </p>
           )}
         </div>
