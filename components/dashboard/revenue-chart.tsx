@@ -3,7 +3,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { DailyRevenue } from "@/lib/types";
-import { formatShortDate } from "@/lib/format";
+import { formatShortDate, formatCurrencyParts } from "@/lib/format";
 import { useState } from "react";
 import {
   BarChart,
@@ -32,7 +32,7 @@ function CustomTooltip({ active, payload, label }: { active?: boolean; payload?:
         <div className="flex items-center gap-2">
           <div className="h-2 w-2 rounded-full bg-blue-500" />
           <p className="text-xs text-muted-foreground">
-            Doanh thu: <span className="font-semibold text-foreground">{new Intl.NumberFormat("vi-VN").format(payload[0].value)}k</span>
+            Doanh thu: <span className="font-semibold text-foreground" title={formatCurrencyParts(payload[0].value).fullVND}>{formatCurrencyParts(payload[0].value).display}</span>
           </p>
         </div>
         {payload[1] && (

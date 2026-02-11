@@ -2,7 +2,7 @@
 
 import { Card, CardContent } from "@/components/ui/card";
 import { DashboardStats } from "@/lib/types";
-import { formatCurrency } from "@/lib/format";
+import { CurrencyText } from "@/components/ui/currency-text";
 import {
   TrendingUp,
   Wallet,
@@ -67,15 +67,21 @@ const cardConfigs = [
   },
 ];
 
-function getValue(key: string, stats: DashboardStats): string {
+function getCurrencyValue(key: string, stats: DashboardStats): number | null {
   switch (key) {
-    case "revenue": return formatCurrency(stats.totalRevenue);
-    case "deposit": return formatCurrency(stats.totalDeposit);
-    case "remaining": return formatCurrency(stats.totalRemaining);
+    case "revenue": return stats.totalRevenue;
+    case "deposit": return stats.totalDeposit;
+    case "remaining": return stats.totalRemaining;
+    case "shipping": return stats.totalShipping;
+    default: return null;
+  }
+}
+
+function getTextValue(key: string, stats: DashboardStats): string | null {
+  switch (key) {
     case "orders": return stats.totalOrders.toLocaleString("vi-VN");
-    case "shipping": return formatCurrency(stats.totalShipping);
     case "completed": return `${stats.completedOrders}/${stats.totalOrders}`;
-    default: return "0";
+    default: return null;
   }
 }
 
@@ -95,7 +101,11 @@ export function StatsCards({ stats }: StatsCardsProps) {
                   {card.title}
                 </p>
                 <p className="text-xl font-bold tracking-tight sm:text-2xl">
-                  {getValue(card.key, stats)}
+                  {getCurrencyValue(card.key, stats) !== null ? (
+                    <CurrencyText value={getCurrencyValue(card.key, stats)!} />
+                  ) : (
+                    getTextValue(card.key, stats)
+                  )}
                 </p>
               </div>
               <div className={`rounded-xl p-2.5 ${card.iconBg} transition-transform duration-200 group-hover:scale-110`}>

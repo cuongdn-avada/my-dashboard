@@ -2,8 +2,9 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { CustomerStat } from "@/lib/types";
-import { formatCurrency } from "@/lib/format";
+import { CurrencyText } from "@/components/ui/currency-text";
 import { Crown, Medal, Award, Users } from "lucide-react";
+import Link from "next/link";
 
 interface TopCustomersProps {
   customers: CustomerStat[];
@@ -37,9 +38,10 @@ export function TopCustomers({ customers }: TopCustomersProps) {
             const config = rankConfig[index];
             const isTop3 = index < 3;
             return (
-              <div
+              <Link
                 key={customer.name}
-                className={`group flex items-center justify-between rounded-xl px-3 py-2.5 transition-all duration-200 cursor-default ${
+                href={`/customers/${encodeURIComponent(customer.name)}`}
+                className={`group flex items-center justify-between rounded-xl px-3 py-2.5 transition-all duration-200 cursor-pointer ${
                   isTop3
                     ? "bg-muted/50 hover:bg-muted"
                     : "hover:bg-muted/50"
@@ -60,7 +62,7 @@ export function TopCustomers({ customers }: TopCustomersProps) {
                     )}
                   </div>
                   <div className="min-w-0">
-                    <p className="text-sm font-medium leading-none truncate">
+                    <p className="text-sm font-medium leading-none truncate group-hover:text-primary transition-colors">
                       {customer.name}
                     </p>
                     <p className="text-[11px] text-muted-foreground mt-1">
@@ -68,10 +70,8 @@ export function TopCustomers({ customers }: TopCustomersProps) {
                     </p>
                   </div>
                 </div>
-                <span className="text-sm font-semibold tabular-nums text-foreground shrink-0 ml-2">
-                  {formatCurrency(customer.totalSpent)}
-                </span>
-              </div>
+                <CurrencyText value={customer.totalSpent} className="text-sm font-semibold tabular-nums text-foreground shrink-0 ml-2" />
+              </Link>
             );
           })}
           {customers.length === 0 && (

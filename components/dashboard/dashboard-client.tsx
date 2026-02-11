@@ -11,7 +11,8 @@ import { SheetSelector } from "./sheet-selector";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { Separator } from "@/components/ui/separator";
 import type { Order, DashboardStats, CustomerStat, DailyRevenue } from "@/lib/types";
-import { BarChart3 } from "lucide-react";
+import { BarChart3, LogOut } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 interface DashboardClientProps {
   orders: Order[];
@@ -105,6 +106,20 @@ export function DashboardClient({ orders, sheets, lastSync }: DashboardClientPro
             />
             <Separator orientation="vertical" className="h-5" />
             <ThemeToggle />
+            <Separator orientation="vertical" className="h-5" />
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-8 w-8 cursor-pointer text-muted-foreground hover:text-foreground"
+              onClick={async () => {
+                await fetch("/api/auth/logout", { method: "POST" });
+                router.push("/login");
+                router.refresh();
+              }}
+              title="Đăng xuất"
+            >
+              <LogOut className="h-4 w-4" />
+            </Button>
           </div>
         </div>
       </header>

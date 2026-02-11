@@ -14,7 +14,8 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Order } from "@/lib/types";
-import { formatCurrency, formatDate } from "@/lib/format";
+import { formatDate } from "@/lib/format";
+import { CurrencyText } from "@/components/ui/currency-text";
 import { Search, ChevronLeft, ChevronRight, ArrowUpDown, TableIcon } from "lucide-react";
 
 interface OrderTableProps {
@@ -151,18 +152,16 @@ export function OrderTable({ orders }: OrderTableProps) {
                     {order.addressPhoneNotes}
                   </TableCell>
                   <TableCell className="text-right font-mono text-sm font-medium">
-                    {formatCurrency(order.total)}
+                    <CurrencyText value={order.total} />
                   </TableCell>
                   <TableCell className="text-right font-mono text-sm text-muted-foreground hidden sm:table-cell">
-                    {formatCurrency(order.deposit)}
+                    <CurrencyText value={order.deposit} />
                   </TableCell>
                   <TableCell className="text-right font-mono text-sm text-muted-foreground hidden sm:table-cell">
-                    {formatCurrency(order.shipping)}
+                    <CurrencyText value={order.shipping} />
                   </TableCell>
                   <TableCell className="text-right font-mono text-sm">
-                    <span className={order.remaining > 0 ? "text-amber-600 dark:text-amber-400 font-medium" : "text-muted-foreground"}>
-                      {formatCurrency(order.remaining)}
-                    </span>
+                    <CurrencyText value={order.remaining} className={order.remaining > 0 ? "text-amber-600 dark:text-amber-400 font-medium" : "text-muted-foreground"} />
                   </TableCell>
                   <TableCell className="pr-6">
                     {order.status === "xong" || order.status === "done" || order.status === "đã lên đơn" ? (
