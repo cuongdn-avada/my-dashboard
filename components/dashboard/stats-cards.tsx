@@ -19,7 +19,7 @@ interface StatsCardsProps {
 const cardConfigs = [
   {
     key: "revenue",
-    title: "Tổng doanh thu",
+    title: "Doanh thu",
     icon: TrendingUp,
     gradient: "from-blue-600 to-indigo-600",
     iconBg: "bg-blue-500/10 dark:bg-blue-400/10",
@@ -27,7 +27,7 @@ const cardConfigs = [
   },
   {
     key: "deposit",
-    title: "Đã cọc",
+    title: "Tiền cọc",
     icon: Wallet,
     gradient: "from-emerald-600 to-teal-600",
     iconBg: "bg-emerald-500/10 dark:bg-emerald-400/10",
@@ -35,7 +35,7 @@ const cardConfigs = [
   },
   {
     key: "remaining",
-    title: "Còn thu",
+    title: "COD",
     icon: Clock,
     gradient: "from-amber-500 to-orange-500",
     iconBg: "bg-amber-500/10 dark:bg-amber-400/10",
@@ -69,19 +69,27 @@ const cardConfigs = [
 
 function getCurrencyValue(key: string, stats: DashboardStats): number | null {
   switch (key) {
-    case "revenue": return stats.totalRevenue;
-    case "deposit": return stats.totalDeposit;
-    case "remaining": return stats.totalRemaining;
-    case "shipping": return stats.totalShipping;
-    default: return null;
+    case "revenue":
+      return stats.totalRevenue;
+    case "deposit":
+      return stats.totalDeposit;
+    case "remaining":
+      return stats.totalRemaining;
+    case "shipping":
+      return stats.totalShipping;
+    default:
+      return null;
   }
 }
 
 function getTextValue(key: string, stats: DashboardStats): string | null {
   switch (key) {
-    case "orders": return stats.totalOrders.toLocaleString("vi-VN");
-    case "completed": return `${stats.completedOrders}/${stats.totalOrders}`;
-    default: return null;
+    case "orders":
+      return stats.totalOrders.toLocaleString("vi-VN");
+    case "completed":
+      return `${stats.completedOrders}/${stats.totalOrders}`;
+    default:
+      return null;
   }
 }
 
@@ -93,7 +101,9 @@ export function StatsCards({ stats }: StatsCardsProps) {
           key={card.key}
           className="group relative overflow-hidden transition-all duration-200 hover:shadow-lg hover:shadow-black/5 dark:hover:shadow-black/20 hover:-translate-y-0.5"
         >
-          <div className={`absolute inset-x-0 top-0 h-0.5 bg-gradient-to-r ${card.gradient} opacity-80`} />
+          <div
+            className={`absolute inset-x-0 top-0 h-0.5 bg-gradient-to-r ${card.gradient} opacity-80`}
+          />
           <CardContent className="p-4 sm:p-5">
             <div className="flex items-start justify-between">
               <div className="space-y-2">
@@ -108,7 +118,9 @@ export function StatsCards({ stats }: StatsCardsProps) {
                   )}
                 </p>
               </div>
-              <div className={`rounded-xl p-2.5 ${card.iconBg} transition-transform duration-200 group-hover:scale-110`}>
+              <div
+                className={`rounded-xl p-2.5 ${card.iconBg} transition-transform duration-200 group-hover:scale-110`}
+              >
                 <card.icon className={`h-4 w-4 ${card.iconColor}`} />
               </div>
             </div>

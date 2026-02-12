@@ -11,9 +11,24 @@ interface TopCustomersProps {
 }
 
 const rankConfig = [
-  { icon: Crown, color: "text-amber-500", bg: "bg-amber-500/10", ring: "ring-amber-500/20" },
-  { icon: Medal, color: "text-slate-400", bg: "bg-slate-400/10", ring: "ring-slate-400/20" },
-  { icon: Award, color: "text-orange-600", bg: "bg-orange-600/10", ring: "ring-orange-600/20" },
+  {
+    icon: Crown,
+    color: "text-amber-500",
+    bg: "bg-amber-500/10",
+    ring: "ring-amber-500/20",
+  },
+  {
+    icon: Medal,
+    color: "text-slate-400",
+    bg: "bg-slate-400/10",
+    ring: "ring-slate-400/20",
+  },
+  {
+    icon: Award,
+    color: "text-orange-600",
+    bg: "bg-orange-600/10",
+    ring: "ring-orange-600/20",
+  },
 ];
 
 export function TopCustomers({ customers }: TopCustomersProps) {
@@ -25,9 +40,9 @@ export function TopCustomers({ customers }: TopCustomersProps) {
             <Users className="h-4 w-4 text-primary" />
           </div>
           <div>
-            <CardTitle className="text-base">Top khach hang</CardTitle>
+            <CardTitle className="text-base">Top khách hàng</CardTitle>
             <p className="text-xs text-muted-foreground mt-0.5">
-              Theo tong chi tieu
+              Theo tổng chi tiêu
             </p>
           </div>
         </div>
@@ -42,9 +57,7 @@ export function TopCustomers({ customers }: TopCustomersProps) {
                 key={customer.name}
                 href={`/customers/${encodeURIComponent(customer.name)}`}
                 className={`group flex items-center justify-between rounded-xl px-3 py-2.5 transition-all duration-200 cursor-pointer ${
-                  isTop3
-                    ? "bg-muted/50 hover:bg-muted"
-                    : "hover:bg-muted/50"
+                  isTop3 ? "bg-muted/50 hover:bg-muted" : "hover:bg-muted/50"
                 }`}
               >
                 <div className="flex items-center gap-3 min-w-0">
@@ -70,7 +83,10 @@ export function TopCustomers({ customers }: TopCustomersProps) {
                     </p>
                   </div>
                 </div>
-                <CurrencyText value={customer.totalSpent} className="text-sm font-semibold tabular-nums text-foreground shrink-0 ml-2" />
+                <CurrencyText
+                  value={customer.totalSpent}
+                  className="text-sm font-semibold tabular-nums text-foreground shrink-0 ml-2"
+                />
               </Link>
             );
           })}

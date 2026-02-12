@@ -16,7 +16,13 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Order } from "@/lib/types";
 import { formatDate } from "@/lib/format";
 import { CurrencyText } from "@/components/ui/currency-text";
-import { Search, ChevronLeft, ChevronRight, ArrowUpDown, TableIcon } from "lucide-react";
+import {
+  Search,
+  ChevronLeft,
+  ChevronRight,
+  ArrowUpDown,
+  TableIcon,
+} from "lucide-react";
 
 interface OrderTableProps {
   orders: Order[];
@@ -41,7 +47,7 @@ export function OrderTable({ orders }: OrderTableProps) {
         o.customerName.toLowerCase().includes(query) ||
         o.addressPhoneNotes.toLowerCase().includes(query) ||
         o.date.includes(query) ||
-        o.notes.toLowerCase().includes(query)
+        o.notes.toLowerCase().includes(query),
     );
   }, [orders, search]);
 
@@ -49,11 +55,21 @@ export function OrderTable({ orders }: OrderTableProps) {
     return [...filtered].sort((a, b) => {
       let cmp = 0;
       switch (sortField) {
-        case "date": cmp = a.date.localeCompare(b.date); break;
-        case "customerName": cmp = a.customerName.localeCompare(b.customerName); break;
-        case "total": cmp = a.total - b.total; break;
-        case "remaining": cmp = a.remaining - b.remaining; break;
-        case "status": cmp = a.status.localeCompare(b.status); break;
+        case "date":
+          cmp = a.date.localeCompare(b.date);
+          break;
+        case "customerName":
+          cmp = a.customerName.localeCompare(b.customerName);
+          break;
+        case "total":
+          cmp = a.total - b.total;
+          break;
+        case "remaining":
+          cmp = a.remaining - b.remaining;
+          break;
+        case "status":
+          cmp = a.status.localeCompare(b.status);
+          break;
       }
       return sortDir === "asc" ? cmp : -cmp;
     });
@@ -72,17 +88,27 @@ export function OrderTable({ orders }: OrderTableProps) {
     setPage(0);
   }
 
-  function SortButton({ field, children }: { field: SortField; children: React.ReactNode }) {
+  function SortButton({
+    field,
+    children,
+  }: {
+    field: SortField;
+    children: React.ReactNode;
+  }) {
     const isActive = sortField === field;
     return (
       <button
         onClick={() => handleSort(field)}
         className={`flex items-center gap-1.5 cursor-pointer transition-colors duration-150 ${
-          isActive ? "text-foreground" : "text-muted-foreground hover:text-foreground"
+          isActive
+            ? "text-foreground"
+            : "text-muted-foreground hover:text-foreground"
         }`}
       >
         {children}
-        <ArrowUpDown className={`h-3 w-3 ${isActive ? "opacity-100" : "opacity-40"}`} />
+        <ArrowUpDown
+          className={`h-3 w-3 ${isActive ? "opacity-100" : "opacity-40"}`}
+        />
       </button>
     );
   }
@@ -95,9 +121,9 @@ export function OrderTable({ orders }: OrderTableProps) {
             <TableIcon className="h-4 w-4 text-primary" />
           </div>
           <div>
-            <CardTitle className="text-base">Chi tiet don hang</CardTitle>
+            <CardTitle className="text-base">Chi tiết đơn hàng</CardTitle>
             <p className="text-xs text-muted-foreground mt-0.5">
-              {filtered.length} don hang
+              {filtered.length} đơn hàng
             </p>
           </div>
         </div>
@@ -120,28 +146,37 @@ export function OrderTable({ orders }: OrderTableProps) {
             <TableHeader>
               <TableRow className="hover:bg-transparent">
                 <TableHead className="w-[90px] pl-6">
-                  <SortButton field="date">Ngay</SortButton>
+                  <SortButton field="date">Ngày</SortButton>
                 </TableHead>
                 <TableHead>
-                  <SortButton field="customerName">Khach hang</SortButton>
+                  <SortButton field="customerName">Khách hàng</SortButton>
                 </TableHead>
-                <TableHead className="hidden md:table-cell">Thong tin</TableHead>
-                <TableHead className="text-right">
-                  <SortButton field="total">Tong tien</SortButton>
+                <TableHead className="hidden md:table-cell">
+                  Thông tin
                 </TableHead>
-                <TableHead className="text-right hidden sm:table-cell">Coc</TableHead>
-                <TableHead className="text-right hidden sm:table-cell">Ship</TableHead>
                 <TableHead className="text-right">
-                  <SortButton field="remaining">Con thu</SortButton>
+                  <SortButton field="total">Tổng tiền</SortButton>
+                </TableHead>
+                <TableHead className="text-right hidden sm:table-cell">
+                  Cọc
+                </TableHead>
+                <TableHead className="text-right hidden sm:table-cell">
+                  Ship
+                </TableHead>
+                <TableHead className="text-right">
+                  <SortButton field="remaining">COD</SortButton>
                 </TableHead>
                 <TableHead className="pr-6">
-                  <SortButton field="status">Trang thai</SortButton>
+                  <SortButton field="status">Trạng thái</SortButton>
                 </TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {paginated.map((order) => (
-                <TableRow key={order.id} className="group transition-colors duration-150">
+                <TableRow
+                  key={order.id}
+                  className="group transition-colors duration-150"
+                >
                   <TableCell className="font-mono text-xs pl-6 text-muted-foreground">
                     {formatDate(order.date)}
                   </TableCell>
@@ -151,7 +186,7 @@ export function OrderTable({ orders }: OrderTableProps) {
                   <TableCell className="hidden md:table-cell text-xs text-muted-foreground max-w-[220px] truncate">
                     {order.addressPhoneNotes}
                   </TableCell>
-                  <TableCell className="text-right font-mono text-sm font-medium">
+                  <TableCell className="text-center font-mono text-sm font-medium">
                     <CurrencyText value={order.total} />
                   </TableCell>
                   <TableCell className="text-right font-mono text-sm text-muted-foreground hidden sm:table-cell">
@@ -160,28 +195,47 @@ export function OrderTable({ orders }: OrderTableProps) {
                   <TableCell className="text-right font-mono text-sm text-muted-foreground hidden sm:table-cell">
                     <CurrencyText value={order.shipping} />
                   </TableCell>
-                  <TableCell className="text-right font-mono text-sm">
-                    <CurrencyText value={order.remaining} className={order.remaining > 0 ? "text-amber-600 dark:text-amber-400 font-medium" : "text-muted-foreground"} />
+                  <TableCell className="text-center font-mono text-sm">
+                    <CurrencyText
+                      value={order.remaining}
+                      className={
+                        order.remaining > 0
+                          ? "text-amber-600 dark:text-amber-400 font-medium"
+                          : "text-muted-foreground"
+                      }
+                    />
                   </TableCell>
                   <TableCell className="pr-6">
-                    {order.status === "xong" || order.status === "done" || order.status === "đã lên đơn" ? (
+                    {order.status === "xong" ||
+                    order.status === "done" ||
+                    order.status === "đã lên đơn" ? (
                       <Badge className="bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border-emerald-500/20 hover:bg-emerald-500/10 text-[11px] font-medium">
                         {order.status}
                       </Badge>
                     ) : order.status ? (
-                      <Badge variant="secondary" className="text-[11px] font-medium">
+                      <Badge
+                        variant="secondary"
+                        className="text-[11px] font-medium"
+                      >
                         {order.status}
                       </Badge>
                     ) : (
-                      <span className="text-xs text-muted-foreground/50">---</span>
+                      <span className="text-xs text-muted-foreground/50">
+                        ---
+                      </span>
                     )}
                   </TableCell>
                 </TableRow>
               ))}
               {paginated.length === 0 && (
                 <TableRow>
-                  <TableCell colSpan={8} className="text-center py-12 text-muted-foreground">
-                    {search ? "Khong tim thay don hang phu hop" : "Chua co du lieu"}
+                  <TableCell
+                    colSpan={8}
+                    className="text-center py-12 text-muted-foreground"
+                  >
+                    {search
+                      ? "Khong tim thay don hang phu hop"
+                      : "Chua co du lieu"}
                   </TableCell>
                 </TableRow>
               )}
@@ -191,7 +245,9 @@ export function OrderTable({ orders }: OrderTableProps) {
         {totalPages > 1 && (
           <div className="flex items-center justify-between px-6 pt-4 pb-2 border-t">
             <p className="text-xs text-muted-foreground">
-              {page * PAGE_SIZE + 1}&ndash;{Math.min((page + 1) * PAGE_SIZE, sorted.length)} / {sorted.length}
+              {page * PAGE_SIZE + 1}&ndash;
+              {Math.min((page + 1) * PAGE_SIZE, sorted.length)} /{" "}
+              {sorted.length}
             </p>
             <div className="flex items-center gap-1.5">
               <Button
